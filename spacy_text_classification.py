@@ -111,3 +111,27 @@ nytimes.ents
 
 entities = [(i.label, i.label_, i.ents) for i in nytimes.ents]
 entities 
+
+# This is an issue. Probably works on Jupyter https://github.com/explosion/spaCy/commit/52658c80d5dcc35469d2006317190009e7f43763#diff-bc6983072591fe3fa303cc3a6eac64dc
+displacy.render(nytimes, style = "ent", jupyter=None)
+
+# Dependency Parsing
+# Dependency parsing is a language processing technique that allows us to better determine the meaning of a sentence by analyzing how it’s constructed to determine how the individual words relate to each other.
+docp = nlp (" In pursuit of a wall, President Trump ran into one.")
+
+for noun in docp.noun_chunks:
+    print(noun)
+
+for chunk in docp.noun_chunks:
+   print(chunk.text, chunk.root.text, chunk.root.dep_,
+          chunk.root.head.text)
+
+# Word vectors
+import en_core_web_sm
+nlp = en_core_web_sm.load()
+mango = nlp(u"mango")
+mango.vector.shape
+print(mango.vector)
+
+#next: start with text classification here:
+#    https://www.dataquest.io/blog/tutorial-text-classification-in-python-using-spacy/
