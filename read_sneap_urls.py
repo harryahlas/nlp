@@ -7,10 +7,9 @@ Created on Thu Aug 22 22:25:07 2019
 
 import requests
 import re
+import pandas as pd
+from bs4 import BeautifulSoup
 
-link = "http://www.ultimatemetal.com/forum/threads/tube-screamer-faq-version-1.346068/page-2"
-link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-101"
-f = requests.get(link)
 #print(f.text)
 
 filehandle = open('x.html', 'w', encoding='utf-8')
@@ -23,21 +22,19 @@ def find_text(text, start_marker, end_marker):
     result = re.search(start_marker + "(.*)" + end_marker, text)
     return result.group(1)
 
+# List of pages to be pulled
+df_pages = pd.DataFrame(None, columns = ['section_name ', 'section_number', 'url'])
 
 # section_name = Backline, section_number = 1
 section_name = Backline
 section_number = 1
 
+link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-101"
+f = requests.get(link)
 
 # Look up value for last page in data-last=
 data_last_page = int(find_text(f.text,'data-last="', '"' ))
 
-
-
-from bs4 import BeautifulSoup
-soup = BeautifulSoup(f.text, "html.parser")
-headers = soup.select('h3.title')
-headers[0].text.strip()
 
 
 ##  This will become loop
@@ -47,8 +44,21 @@ headers[0].text.strip()
     #USE BELOW IF PAGE 1 DOESNT WORK
 #if i == 1 then url_lookup = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/"
 #else 
+i = 1
+link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-" + str(i)
+f = requests.get(link)
 
-url_lookup = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-" + str(i)
+soup = BeautifulSoup(f.text, "html.parser")
+headers = soup.select('h3.title')
+
+headers[0].text.strip()
+
+
+
+
+
+
+
 
 
 
