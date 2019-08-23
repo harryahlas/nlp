@@ -32,14 +32,14 @@ section_number = 1
 # Look up value for last page in data-last=
 data_last_page = int(find_text(f.text,'data-last="', '"' ))
 
-import json
-ContentUrl = json.dumps({
-    'url': url_lookup,#str(urls),
-    #'uid': str(uniqueID),
-    'page_content': f.text
-    #'date': finalDate
-})
-jsonL = json.loads(ContentUrl)
+
+
+from bs4 import BeautifulSoup
+soup = BeautifulSoup(f.text, "html.parser")
+headers = soup.select('h3.title')
+headers[0].text.strip()
+
+
 ##  This will become loop
 
 # for i in 1:data_last_page:
