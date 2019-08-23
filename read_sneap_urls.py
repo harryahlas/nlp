@@ -44,6 +44,8 @@ def get_pages(section_name, section_number, url_prefix):
     # Look up value for last page in data-last=
     data_last_page = int(find_text(f.text,'data-last="', '"' ))
     
+    # Threads prefix
+    threads_prefix = "http://www.ultimatemetal.com/forum/"
     
     for i in range(1,5 + 1):
         print("loop" + str(i))
@@ -59,7 +61,7 @@ def get_pages(section_name, section_number, url_prefix):
             
             # Get end of each thread link
             url_suffix = find_text(str(headers[j]), 'href="', '/"')
-            url = url_prefix + url_suffix 
+            url = threads_prefix + url_suffix 
             thread_title = headers[j].text.strip()
             
             # Get page to append to data set
@@ -72,12 +74,42 @@ def get_pages(section_name, section_number, url_prefix):
             
     return df_pages
     
-df_pages_backline = get_pages('Backline', 
+df_pages_main = get_pages('Main', 
+                              0,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap/")
+
+df_pages_backstage = get_pages('Backstage', 
                               1,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-backstage/")
+
+df_pages_foh = get_pages('FOH', 
+                              2,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-foh/")
+
+df_pages_practice_room = get_pages('Practice_Room', 
+                              3,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-practice-room/")
+
+df_pages_backline = get_pages('Backline', 
+                              4,
                               "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/")
 
+df_pages_merch_stand = get_pages('Merch_Stand', 
+                              5,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-merch-stand/")
+
+df_pages_bar = get_pages('Bar', 
+                              6,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-bar/")
 
 
+df_pages_all = pd.concat([df_pages_main,
+                          df_pages_backstage,
+                          df_pages_foh,
+                          df_pages_practice_room,
+                          df_pages_backline,
+                          df_pages_merch_stand,
+                          df_pages_bar], ignore_index=True)
 
 # Look up titles/links on current page
 # Start Marker for link
