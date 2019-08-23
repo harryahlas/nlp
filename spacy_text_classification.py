@@ -133,5 +133,28 @@ mango = nlp(u"mango")
 mango.vector.shape
 print(mango.vector)
 
-#next: start with text classification here:
-#    https://www.dataquest.io/blog/tutorial-text-classification-in-python-using-spacy/
+
+
+# Text Classification
+import pandas as pd
+from sklearn.feature_extraction.text import CountVectorizer,TfidfVectorizer
+from sklearn.base import TransformerMixin
+from sklearn.pipeline import Pipeline
+# Data:
+#https://www.kaggle.com/sid321axn/amazon-alexa-reviews/home
+df_amazon = pd.read_csv("datasets/amazon_alexa.tsv", sep = "\t")
+df_amazon.head()
+df_amazon.feedback.value_counts()
+
+import string
+from spacy.lang.en.stop_words import STOP_WORDS
+from spacy.lang.en import English
+
+# Create our list of punctuation marks
+punctuations = string.punctuation
+
+nlp = spacy.load('en')
+stop_words = spacy.lang.en.stop_words.STOP_WORDS
+
+# Load English tokenizer, tagger, parser, NER and word vectors
+parser = English()
