@@ -206,3 +206,26 @@ X = df_amazon['verified_reviews'] # the features we want to analyze
 ylabels = df_amazon['feedback'] # the labels, or answers, we want to test against
 
 X_train, X_test, y_train, y_test = train_test_split(X, ylabels, test_size=0.3)
+
+# Creating a Pipeline and Generating the Model
+# Logistic Regression Classifier
+from sklearn.linear_model import LogisticRegression
+classifier = LogisticRegression()
+
+# Create pipeline using Bag of Words
+pipe = Pipeline([("cleaner", predictors()),
+                 ('vectorizer', bow_vector),
+                 ('classifier', classifier)])
+
+# model generation
+pipe.fit(X_train,y_train)
+
+# Evaluate
+from sklearn import metrics
+# Predicting with a test dataset
+predicted = pipe.predict(X_test)
+
+# Model Accuracy
+print("Logistic Regression Accuracy:",metrics.accuracy_score(y_test, predicted))
+print("Logistic Regression Precision:",metrics.precision_score(y_test, predicted))
+print("Logistic Regression Recall:",metrics.recall_score(y_test, predicted))
