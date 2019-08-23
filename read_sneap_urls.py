@@ -18,8 +18,14 @@ filehandle.close()
 
 
 # section_name = Backline, section_number = 1
+section_name = Backline
+section_number = 1
 
+def find_text(text, start_marker, end_marker):
+    
+    
 # Look up value for last page in data-last=
+data_last_page = data-last="1022"
 ##  This will become loop
 
 # Look up titles/links on current page
