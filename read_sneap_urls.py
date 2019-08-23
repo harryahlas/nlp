@@ -21,8 +21,7 @@ filehandle.close()
 # Function to search for text between 2 markers
 def find_text(text, start_marker, end_marker):
     result = re.search(start_marker + "(.*)" + end_marker, text)
-    output = print(result.group(1))
-    return output
+    return result.group(1)
 
 
 # section_name = Backline, section_number = 1
@@ -30,19 +29,28 @@ section_name = Backline
 section_number = 1
 
 
-start_marker = 'data-last="'
-end_marker = '"'
-
-find_text('xxx" data-last="jjjjsd" hellow', 'data-last="', '"' )
-    
 # Look up value for last page in data-last=
-data_last_page = data-last="1022"
+data_last_page = int(find_text(f.text,'data-last="', '"' ))
+
+import json
+ContentUrl = json.dumps({
+    'url': url_lookup,#str(urls),
+    #'uid': str(uniqueID),
+    'page_content': f.text
+    #'date': finalDate
+})
+jsonL = json.loads(ContentUrl)
 ##  This will become loop
 
-text = 'xxx" data-last="jjjjsd" hellow'
-s = 'xxx" data-last="jjjjsd" hellow'
-result = re.search('data-last="(.*)"', s)
-print(result.group(1))
+# for i in 1:data_last_page:
+
+    #USE BELOW IF PAGE 1 DOESNT WORK
+#if i == 1 then url_lookup = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/"
+#else 
+
+url_lookup = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-" + str(i)
+
+
 
 # Look up titles/links on current page
 # Start Marker for link
