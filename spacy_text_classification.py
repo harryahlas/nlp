@@ -229,3 +229,4 @@ predicted = pipe.predict(X_test)
 print("Logistic Regression Accuracy:",metrics.accuracy_score(y_test, predicted))
 print("Logistic Regression Precision:",metrics.precision_score(y_test, predicted))
 print("Logistic Regression Recall:",metrics.recall_score(y_test, predicted))
+
