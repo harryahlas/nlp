@@ -22,61 +22,59 @@ def find_text(text, start_marker, end_marker):
     result = re.search(start_marker + "(.*)" + end_marker, text)
     return result.group(1)
 
-# List of pages to be pulled
-df_pages = pd.DataFrame(None, columns = ['section_name ', 
-                                         'section_number', 
-                                         'url', 
-                                         'thread_title'])
+
 
 # section_name = Backline, section_number = 1
 section_name = 'Backline'
 section_number = 1
 
-link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-101"
-f = requests.get(link)
-
-# Look up value for last page in data-last=
-data_last_page = int(find_text(f.text,'data-last="', '"' ))
-
-
+section_link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/"
 url_prefix = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/"
 
-##  This will become loop
+def get_pages(section_name, section_number, url_prefix):
 
-# for i in 1:data_last_page:
+    # List of pages to be pulled
+    df_pages = pd.DataFrame(None, columns = ['section_name', 
+                                             'section_number', 
+                                             'url', 
+                                             'thread_title'])
+    # Retrieve section links
+    f = requests.get(url_prefix)
 
-    #USE BELOW IF PAGE 1 DOESNT WORK
-#if i == 1 then url_lookup = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/"
-#else 
-
-i = 1
-for i in range(1,5 + 1):
-    print("loop" + str(i))
-
-link = "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/page-" + str(i)
-f = requests.get(link)
-
-soup = BeautifulSoup(f.text, "html.parser")
-headers = soup.select('h3.title')
-
-for j in range(len(headers)):
-    print("going through headers " + str(j))
+    # Look up value for last page in data-last=
+    data_last_page = int(find_text(f.text,'data-last="', '"' ))
     
-    # Get end of each thread link
-    url_suffix = find_text(str(headers[j]), 'href="', '/"')
-    url = url_prefix + url_suffix 
-    thread_title = headers[j].text.strip()
     
-    # Get page to append to data set
-    df_pages_temp = pd.DataFrame({"section_name": [section_name],
-                                  "section_number": [section_number],
-                                  "url": [url],
-                                  "thread_title": [thread_title]})
-                                  
-    df_pages = df_pages.append(df_pages_temp)
-
-
-
+    for i in range(1,5 + 1):
+        print("loop" + str(i))
+    
+        link = url_prefix + "page-" + str(i)
+        f = requests.get(link)
+        
+        soup = BeautifulSoup(f.text, "html.parser")
+        headers = soup.select('h3.title')
+        
+        for j in range(len(headers)):
+            print("going through headers " + str(j))
+            
+            # Get end of each thread link
+            url_suffix = find_text(str(headers[j]), 'href="', '/"')
+            url = url_prefix + url_suffix 
+            thread_title = headers[j].text.strip()
+            
+            # Get page to append to data set
+            df_pages_temp = pd.DataFrame({"section_name": [section_name],
+                                          "section_number": [section_number],
+                                          "url": [url],
+                                          "thread_title": [thread_title]})
+                                          
+            df_pages = df_pages.append(df_pages_temp)
+            
+    return df_pages
+    
+df_pages_backline = get_pages('Backline', 
+                              1,
+                              "http://www.ultimatemetal.com/forum/forums/andy-sneap-backline/")
 
 
 
