@@ -50,11 +50,17 @@ f = requests.get(link)
 
 soup = BeautifulSoup(f.text, "html.parser")
 headers = soup.select('h3.title')
+headers[0]
 
+#THIS MAY NOT WORK
+url_new = find_text(str(headers[0]), 'href="', '/"')
+url_new 
 headers[0].text.strip()
 
+headersx = soup.select('h3.title.a')
+headersx[0]
 
-
+str(headersx)
 
 
 
