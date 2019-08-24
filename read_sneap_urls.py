@@ -123,6 +123,10 @@ for idx, url in enumerate(df_pages_all.url):
     initial_message = soup.select('div.messageContent')
     df_pages_all.initial_message_text[idx] = initial_message[0].text
     
+df_pages_all_backup = df_pages_all
+df_pages_all_backup.to_pickle("datasets/df_pages_all_backup.pkl")
+del df_pages_all_backup
+df_pages_all_backup = pd.read_pickle("datasets/df_pages_all_backup.pkl")
 
 # Look up titles/links on current page
 # Start Marker for link
