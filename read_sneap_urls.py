@@ -102,7 +102,7 @@ df_pages_bar = get_pages('Bar',
                               6,
                               "http://www.ultimatemetal.com/forum/forums/andy-sneap-bar/")
 
-
+# Combine all forum data together
 df_pages_all = pd.concat([df_pages_main,
                           df_pages_backstage,
                           df_pages_foh,
@@ -111,14 +111,18 @@ df_pages_all = pd.concat([df_pages_main,
                           df_pages_merch_stand,
                           df_pages_bar], ignore_index=True)
 
-df_pages_all['html'] = None
+# Create column to capture html
+df_pages_all['initial_message_text'] = None
     
-for idx, url in enumerate(df_pages_all.url[0:10]):
+# Get initial message for all pages
+for idx, url in enumerate(df_pages_all.url):
     print(idx, url)
     f = requests.get(url)
-    df_pages_all.html[idx] = f.text
+        
+    soup = BeautifulSoup(f.text, "html.parser")
+    initial_message = soup.select('div.messageContent')
+    df_pages_all.initial_message_text[idx] = initial_message[0].text
     
-df_pages_all.html[3]
 
 # Look up titles/links on current page
 # Start Marker for link
