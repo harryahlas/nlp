@@ -111,6 +111,15 @@ df_pages_all = pd.concat([df_pages_main,
                           df_pages_merch_stand,
                           df_pages_bar], ignore_index=True)
 
+df_pages_all['html'] = None
+    
+for idx, url in enumerate(df_pages_all.url[0:10]):
+    print(idx, url)
+    f = requests.get(url)
+    df_pages_all.html[idx] = f.text
+    
+df_pages_all.html[3]
+
 # Look up titles/links on current page
 # Start Marker for link
 # End marker for link
