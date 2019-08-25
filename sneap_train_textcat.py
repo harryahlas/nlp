@@ -10,7 +10,7 @@ see the documentation:
 Compatible with: spaCy v2.0.0+
 """
 import pandas as pd
-
+import numpy as np
 
 from __future__ import unicode_literals, print_function
 import plac
@@ -80,7 +80,7 @@ df_pages_all['section_name'][100]
 
 # Split train/test
 df_pages_train = df_pages_all.iloc[0:train_size,:]
-df_pages_test = df_pages_all.iloc[train_size:,:]
+df_pages_test = df_pages_all.iloc[train_size:,:].reset_index()
 
 n_iter=2 
 n_texts=2000
@@ -192,13 +192,27 @@ print(test_text,
 
 
 # Evaluate on test data
-df_pages_test['recommendation'] = None
+df_pages_test['recommendation'] = str()
+df_pages_test['certainty'] = float()
 
 for i in df_pages_test.index:
+    print(i)
     test_text = df_pages_test.iloc[i]['initial_message_text']
     doc = nlp(test_text)
-    recommendation = max(doc.cats.items(), key=operator.itemgetter(1))[0]
+    prediction = max(doc.cats.items(), key=operator.itemgetter(1))
+    df_pages_test['recommendation'][i] = prediction[0]
+    df_pages_test['certainty'][i] = prediction[1]
 
+df_pages_test['recommendation'].value_counts()    
+df_pages_test['correct'] = np.where(df_pages_test['recommendation'] == df_pages_test['section_name'], 'correct', 'incorrect')
+df_pages_test['correct'].value_counts()
+
+df_pages_test.groupby(['correct', 'recommendation']).mean()['certainty']
+
+# Save model
+nlp.to_disk("nlp20190824")
+nlp2 = spacy.load("nlp20190824")
+    
 ## Optional save, needs work
 if output_dir is not None:
     with nlp.use_params(optimizer.averages):
