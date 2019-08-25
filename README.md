@@ -5,4 +5,5 @@ Code and processes for nlp work
 * Next step would be to go back to the nlp tutorial and try to add entities for things like music equipment and band names.
   * Bonus if we can pull equipment and band names from elsewhere.
 * train_textcat.py is from https://github.com/explosion/spaCy/blob/master/examples/training/train_textcat.py
-  * sneap_train_textcat.py has run with 7 possible classifications
+  * *sneap_train_textcat.py* has run with 7 possible classifications
+  * *evaluate* function needs to be moved up and edited

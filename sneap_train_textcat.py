@@ -115,65 +115,7 @@ textcat.add_label("Bar")
 train_data = list(zip(df_pages_train['initial_message_text'], df_pages_train['labels']))
 #train_data = list(zip(train_texts, [{"cats": cats} for cats in train_cats]))
 
-# get names of other pipes to disable them during training
-other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "textcat"]
-with nlp.disable_pipes(*other_pipes):  # only train textcat
-    optimizer = nlp.begin_training()
-    if init_tok2vec is not None:
-        with init_tok2vec.open("rb") as file_:
-            textcat.model.tok2vec.from_bytes(file_.read())
-    print("Training the model...")
-    print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
-    batch_sizes = compounding(4.0, 32.0, 1.001)
-    for i in range(n_iter):
-        losses = {}
-        # batch up the examples using spaCy's minibatch
-        random.shuffle(train_data)
-        batches = minibatch(train_data, size=batch_sizes)
-        for batch in batches:
-            texts, annotations = zip(*batch)
-            nlp.update(texts, annotations, sgd=optimizer, drop=0.2, losses=losses)
-        with textcat.model.use_params(optimizer.averages):
-            # evaluate on the dev data split off in load_data()
-            scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
-        print(
-            "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
-                losses["textcat"],
-                scores["textcat_p"],
-                scores["textcat_r"],
-                scores["textcat_f"],
-            )
-        )
-
-    # test the trained model
-    test_text = "This movie sucked"
-    doc = nlp(test_text)
-    print(test_text, doc.cats)
-
-    if output_dir is not None:
-        with nlp.use_params(optimizer.averages):
-            nlp.to_disk(output_dir)
-        print("Saved model to", output_dir)
-
-        # test the saved model
-        print("Loading from", output_dir)
-        nlp2 = spacy.load(output_dir)
-        doc2 = nlp2(test_text)
-        print(test_text, doc2.cats)
-
-
-def load_data(limit=0, split=0.8):
-    """Load data from the IMDB dataset."""
-    # Partition off part of the train data for evaluation
-    train_data, _ = thinc.extra.datasets.imdb()
-    random.shuffle(train_data)
-    train_data = train_data[-limit:]
-    texts, labels = zip(*train_data)
-    cats = [{"POSITIVE": bool(y), "NEGATIVE": not bool(y)} for y in labels]
-    split = int(len(train_data) * split)
-    return (texts[:split], cats[:split]), (texts[split:], cats[split:])
-
-
+### Evaluation function (needs work)
 def evaluate(tokenizer, textcat, texts, cats):
     docs = (tokenizer(text) for text in texts)
     tp = 0.0  # True positives
@@ -203,6 +145,52 @@ def evaluate(tokenizer, textcat, texts, cats):
         f_score = 2 * (precision * recall) / (precision + recall)
     return {"textcat_p": precision, "textcat_r": recall, "textcat_f": f_score}
 
+# get names of other pipes to disable them during training
+other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "textcat"]
 
-if __name__ == "__main__":
-    plac.call(main)
+# Train
+with nlp.disable_pipes(*other_pipes):  # only train textcat
+    optimizer = nlp.begin_training()
+    if init_tok2vec is not None:
+        with init_tok2vec.open("rb") as file_:
+            textcat.model.tok2vec.from_bytes(file_.read())
+    print("Training the model...")
+    print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
+    batch_sizes = compounding(4.0, 32.0, 1.001)
+    for i in range(n_iter):
+        losses = {}
+        # batch up the examples using spaCy's minibatch
+        random.shuffle(train_data)
+        batches = minibatch(train_data, size=batch_sizes)
+        for batch in batches:
+            texts, annotations = zip(*batch)
+            nlp.update(texts, annotations, sgd=optimizer, drop=0.2, losses=losses)
+        with textcat.model.use_params(optimizer.averages):
+            # evaluate on the dev data split off in load_data()
+            scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
+        print(
+            "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
+                losses["textcat"],
+                scores["textcat_p"],
+                scores["textcat_r"],
+                scores["textcat_f"],
+            )
+        )
+
+# test the trained model
+test_text = "This movie sucked"
+doc = nlp(test_text)
+print(test_text, doc.cats)
+
+## Optional save, needs work
+if output_dir is not None:
+    with nlp.use_params(optimizer.averages):
+        nlp.to_disk(output_dir)
+    print("Saved model to", output_dir)
+
+    # test the saved model
+    print("Loading from", output_dir)
+    nlp2 = spacy.load(output_dir)
+    doc2 = nlp2(test_text)
+    print(test_text, doc2.cats)
+
