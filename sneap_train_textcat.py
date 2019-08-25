@@ -24,51 +24,40 @@ from spacy.util import minibatch, compounding
 
 # import data from read_sneap_urls.py
 df_pages_all = pd.read_pickle("datasets/df_pages_all_backup.pkl")
+#df_pages_all['section_number'] = np.int64(df_pages_all['section_number'])
 
 # randomize
 df_pages_all = df_pages_all.sample(frac=1).reset_index()
 
-for i in len()
-# create dictionary of labels, default to False
-df_pages_all['labels'][i] = {'cats': {'MAIN': False,
- 'BACKSTAGE': False,
- 'FOH': False,
- 'PRACTICE_ROOM': False,
- 'BACKLINE': False,
- 'MERCHSTAND': False,
- 'BAR': False }}
+# Initialize dictionary
+df_pages_all['labels'] = None
 
-# Set dictionary to True for correct forum
+# Update dictionary by section_name
 def update_forum_dict(forum_name, df, iteration):
     if df['section_name'][iteration] == forum_name :
         df['labels'][iteration]['cats'][forum_name ] = True
 
-update_forum_dict('MAIN', df_pages_all, i)
-update_forum_dict('BACKSTAGE', df_pages_all, i)
-update_forum_dict('FOH', df_pages_all, i)
-update_forum_dict('PRACTICE_ROOM', df_pages_all, i)
-update_forum_dict('BACKLINE', df_pages_all, i)
-update_forum_dict('MERCHSTAND', df_pages_all, i)
-update_forum_dict('BAR', df_pages_all, i)
+# create dictionary of labels
+for i in df_pages_all.index:
 
+    # default to False    
+    df_pages_all['labels'][i] = {'cats': {'Main': False,
+     'Backstage': False,
+     'FOH': False,
+     'Practice_Room': False,
+     'Backline': False,
+     'Merchstand': False,
+     'Bar': False }}
+    
+    # Set dictionary to True for correct forum
+    update_forum_dict('Main', df_pages_all, i)
+    update_forum_dict('Backstage', df_pages_all, i)
+    update_forum_dict('FOH', df_pages_all, i)
+    update_forum_dict('Practice_Room', df_pages_all, i)
+    update_forum_dict('Backline', df_pages_all, i)
+    update_forum_dict('Merch_Stand', df_pages_all, i)
+    update_forum_dict('Bar', df_pages_all, i)
 
-
-df_pages_all['section_number'] = np.int64(df_pages_all['section_number'])
-
-
-
-'''
-create dictionary like below
-train_data[0][1]
-Out[54]: {'cats': {'NEGATIVE': False, 'POSITIVE': True}} (type = dict)
-{'cats': {'MAIN': False,
- 'BACKSTAGE': False,
- 'FOH': False,
- 'PRACTICE_ROOM': False,
- 'BACKLINE': False,
- 'MERCHSTAND': False,
- 'BAR': False }}
-'''
 
 @plac.annotations(
     model=("Model name. Defaults to blank 'en' model.", "option", "m", str),
@@ -77,7 +66,14 @@ Out[54]: {'cats': {'NEGATIVE': False, 'POSITIVE': True}} (type = dict)
     n_iter=("Number of training iterations", "option", "n", int),
     init_tok2vec=("Pretrained tok2vec weights", "option", "t2v", Path)
 )
-def main(model=None, output_dir=None, n_iter=20, n_texts=2000, init_tok2vec=None):
+
+
+df_pages_all['labels'][100]
+df_pages_all['section_name'][100]
+
+
+n_iter=2 
+n_texts=2000
     if output_dir is not None:
         output_dir = Path(output_dir)
         if not output_dir.exists():
