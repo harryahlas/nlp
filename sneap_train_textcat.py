@@ -21,6 +21,7 @@ import thinc.extra.datasets
 import spacy
 from spacy.util import minibatch, compounding
 
+import operator # for evaluation
 
 # import data from read_sneap_urls.py
 df_pages_all = pd.read_pickle("datasets/df_pages_all_backup.pkl")
@@ -178,9 +179,25 @@ with nlp.disable_pipes(*other_pipes):  # only train textcat
         )
 
 # test the trained model
-test_text = "This movie sucked"
+test_text = "What do you think about the distressor? I tried it out for the first time. NOt sure how to use it though. Help!"
 doc = nlp(test_text)
 print(test_text, doc.cats)
+
+test_row_num = 127
+test_text = df_pages_test.iloc[test_row_num]['initial_message_text']
+doc = nlp(test_text)
+print(test_text, 
+      doc.cats,
+      "Correct section: " + df_pages_test.iloc[test_row_num]['section_name'])
+
+
+# Evaluate on test data
+df_pages_test['recommendation'] = None
+
+for i in df_pages_test.index:
+    test_text = df_pages_test.iloc[i]['initial_message_text']
+    doc = nlp(test_text)
+    recommendation = max(doc.cats.items(), key=operator.itemgetter(1))[0]
 
 ## Optional save, needs work
 if output_dir is not None:
