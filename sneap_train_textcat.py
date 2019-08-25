@@ -26,6 +26,12 @@ from spacy.util import minibatch, compounding
 df_pages_all = pd.read_pickle("datasets/df_pages_all_backup.pkl")
 #df_pages_all['section_number'] = np.int64(df_pages_all['section_number'])
 
+# Set training data size
+train_pct = .8
+train_size = round(len(df_pages_all) * train_pct)
+
+#############MAYBE NEED TO CLEAN TEXT DATA MORE??
+
 # randomize
 df_pages_all = df_pages_all.sample(frac=1).reset_index()
 
@@ -46,7 +52,7 @@ for i in df_pages_all.index:
      'FOH': False,
      'Practice_Room': False,
      'Backline': False,
-     'Merchstand': False,
+     'Merch_Stand': False,
      'Bar': False }}
     
     # Set dictionary to True for correct forum
@@ -71,81 +77,73 @@ for i in df_pages_all.index:
 df_pages_all['labels'][100]
 df_pages_all['section_name'][100]
 
+# Split train/test
+df_pages_train = df_pages_all.iloc[0:train_size,:]
+df_pages_test = df_pages_all.iloc[train_size:,:]
 
 n_iter=2 
 n_texts=2000
-    if output_dir is not None:
-        output_dir = Path(output_dir)
-        if not output_dir.exists():
-            output_dir.mkdir()
+    
+nlp = spacy.blank("en")  # create blank Language class
 
-    if model is not None:
-        nlp = spacy.load(model)  # load existing spaCy model
-        print("Loaded model '%s'" % model)
-    else:
-        nlp = spacy.blank("en")  # create blank Language class
-        print("Created blank 'en' model")
-
-    # add the text classifier to the pipeline if it doesn't exist
-    # nlp.create_pipe works for built-ins that are registered with spaCy
-    if "textcat" not in nlp.pipe_names:
-        textcat = nlp.create_pipe(
-            "textcat",
-            config={
-                "exclusive_classes": True,
-                "architecture": "simple_cnn",
-            }
-        )
-        nlp.add_pipe(textcat, last=True)
-    # otherwise, get it, so we can add labels to it
-    else:
-        textcat = nlp.get_pipe("textcat")
-
-    # add label to text classifier
-    textcat.add_label("POSITIVE")
-    textcat.add_label("NEGATIVE")
-
-    # load the IMDB dataset
-    print("Loading IMDB data...")
-    (train_texts, train_cats), (dev_texts, dev_cats) = load_data()
-    train_texts = train_texts[:n_texts]
-    train_cats = train_cats[:n_texts]
-    print(
-        "Using {} examples ({} training, {} evaluation)".format(
-            n_texts, len(train_texts), len(dev_texts)
-        )
+# add the text classifier to the pipeline if it doesn't exist
+# nlp.create_pipe works for built-ins that are registered with spaCy
+if "textcat" not in nlp.pipe_names:
+    textcat = nlp.create_pipe(
+        "textcat",
+        config={
+            "exclusive_classes": True,
+            "architecture": "simple_cnn",
+        }
     )
-    train_data = list(zip(train_texts, [{"cats": cats} for cats in train_cats]))
+    nlp.add_pipe(textcat, last=True)
 
-    # get names of other pipes to disable them during training
-    other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "textcat"]
-    with nlp.disable_pipes(*other_pipes):  # only train textcat
-        optimizer = nlp.begin_training()
-        if init_tok2vec is not None:
-            with init_tok2vec.open("rb") as file_:
-                textcat.model.tok2vec.from_bytes(file_.read())
-        print("Training the model...")
-        print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
-        batch_sizes = compounding(4.0, 32.0, 1.001)
-        for i in range(n_iter):
-            losses = {}
-            # batch up the examples using spaCy's minibatch
-            random.shuffle(train_data)
-            batches = minibatch(train_data, size=batch_sizes)
-            for batch in batches:
-                texts, annotations = zip(*batch)
-                nlp.update(texts, annotations, sgd=optimizer, drop=0.2, losses=losses)
-            with textcat.model.use_params(optimizer.averages):
-                # evaluate on the dev data split off in load_data()
-                scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
-            print(
-                "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
-                    losses["textcat"],
-                    scores["textcat_p"],
-                    scores["textcat_r"],
-                    scores["textcat_f"],
-                )
+# otherwise, get it, so we can add labels to it
+else:
+    textcat = nlp.get_pipe("textcat")
+
+# add label to text classifier
+textcat.add_label("Main")
+textcat.add_label("Backstage")
+textcat.add_label("FOH")
+textcat.add_label("Practice_Room")
+textcat.add_label("Backline")
+textcat.add_label("Merch_Stand")
+textcat.add_label("Bar")
+
+# Create Training set
+train_data = list(zip(df_pages_train['initial_message_text'], df_pages_train['labels']))
+#train_data = list(zip(train_texts, [{"cats": cats} for cats in train_cats]))
+
+# get names of other pipes to disable them during training
+other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "textcat"]
+with nlp.disable_pipes(*other_pipes):  # only train textcat
+    optimizer = nlp.begin_training()
+    if init_tok2vec is not None:
+        with init_tok2vec.open("rb") as file_:
+            textcat.model.tok2vec.from_bytes(file_.read())
+    print("Training the model...")
+    print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
+    batch_sizes = compounding(4.0, 32.0, 1.001)
+    for i in range(n_iter):
+        losses = {}
+        # batch up the examples using spaCy's minibatch
+        random.shuffle(train_data)
+        batches = minibatch(train_data, size=batch_sizes)
+        for batch in batches:
+            texts, annotations = zip(*batch)
+            nlp.update(texts, annotations, sgd=optimizer, drop=0.2, losses=losses)
+        with textcat.model.use_params(optimizer.averages):
+            # evaluate on the dev data split off in load_data()
+            scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
+        print(
+            "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
+                losses["textcat"],
+                scores["textcat_p"],
+                scores["textcat_r"],
+                scores["textcat_f"],
             )
+        )
 
     # test the trained model
     test_text = "This movie sucked"
