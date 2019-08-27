@@ -219,7 +219,7 @@ print(test_text,
       doc.cats,
       "Correct section: " + df_pages_test.iloc[test_row_num]['section_name'])
 
-
+ 
 # Evaluate on test data
 df_pages_test['recommendation'] = str()
 df_pages_test['certainty'] = float()
