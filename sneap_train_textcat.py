@@ -82,8 +82,8 @@ df_pages_all['section_name'][30100]
 df_pages_train = df_pages_all.iloc[0:train_size,:]
 df_pages_test = df_pages_all.iloc[train_size:,:].reset_index()
 
-n_iter=2 
-n_texts=2000
+n_iter=10 
+#n_texts=2000
     
 nlp = spacy.blank("en")  # create blank Language class
 
@@ -148,13 +148,13 @@ def evaluate(tokenizer, textcat, texts, cats):
 
 # get names of other pipes to disable them during training
 other_pipes = [pipe for pipe in nlp.pipe_names if pipe != "textcat"]
-
+init_tok2vec=None
 # Train
 with nlp.disable_pipes(*other_pipes):  # only train textcat
     optimizer = nlp.begin_training()
-    if init_tok2vec is not None:
-        with init_tok2vec.open("rb") as file_:
-            textcat.model.tok2vec.from_bytes(file_.read())
+#    if init_tok2vec is not None:
+#        with init_tok2vec.open("rb") as file_:
+#            textcat.model.tok2vec.from_bytes(file_.read())
     print("Training the model...")
     print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
     batch_sizes = compounding(4.0, 32.0, 1.001)
