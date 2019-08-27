@@ -75,8 +75,8 @@ for i in df_pages_all.index:
 )
 
 
-df_pages_all['labels'][100]
-df_pages_all['section_name'][100]
+df_pages_all['labels'][30100]
+df_pages_all['section_name'][30100]
 
 # Split train/test
 df_pages_train = df_pages_all.iloc[0:train_size,:]
