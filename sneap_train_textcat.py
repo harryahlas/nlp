@@ -183,17 +183,17 @@ with nlp.disable_pipes(*other_pipes):  # only train textcat
                        drop=0.2, 
                        losses=losses
                        )
-        with textcat.model.use_params(optimizer.averages):
-            # evaluate on the dev data split off in load_data()
-            scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
-        print(
-            "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
-                losses["textcat"],
-                scores["textcat_p"],
-                scores["textcat_r"],
-                scores["textcat_f"],
-            )
-       )
+#        with textcat.model.use_params(optimizer.averages):
+#            # evaluate on the dev data split off in load_data()
+#            scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
+#        print(
+#            "{0:.3f}\t{1:.3f}\t{2:.3f}\t{3:.3f}".format(  # print a simple table
+#                losses["textcat"],
+#                scores["textcat_p"],
+#                scores["textcat_r"],
+#                scores["textcat_f"],
+#            )
+#       )
 
 
 
