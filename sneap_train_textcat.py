@@ -27,9 +27,6 @@ import operator # for evaluation
 df_pages_all = pd.read_pickle("datasets/df_pages_all_backup.pkl")
 #df_pages_all['section_number'] = np.int64(df_pages_all['section_number'])
 
-# Set training data size
-train_pct = .8
-train_size = round(len(df_pages_all) * train_pct)
 
 #############MAYBE NEED TO CLEAN TEXT DATA MORE??
 
@@ -78,10 +75,20 @@ for i in df_pages_all.index:
 df_pages_all['labels'][30100]
 df_pages_all['section_name'][30100]
 
+# Remove NAs
+df_pages_all.dropna(subset = ['initial_message_text'], inplace = True)
+
+# Set training data size
+train_pct = .8
+train_size = round(len(df_pages_all) * train_pct)
+
 # Split train/test
 df_pages_train = df_pages_all.iloc[0:train_size,:]
 df_pages_test = df_pages_all.iloc[train_size:,:].reset_index()
 
+#dfx = df_pages_all[df_pages_all.initial_message_text.isnull()]
+#dfx = df_pages_all.dropna(subset = ['initial_message_text'], inplace = True)
+                    
 n_iter=10 
 #n_texts=2000
     
@@ -152,9 +159,9 @@ init_tok2vec=None
 # Train
 with nlp.disable_pipes(*other_pipes):  # only train textcat
     optimizer = nlp.begin_training()
-#    if init_tok2vec is not None:
-#        with init_tok2vec.open("rb") as file_:
-#            textcat.model.tok2vec.from_bytes(file_.read())
+    if init_tok2vec is not None:
+        with init_tok2vec.open("rb") as file_:
+            textcat.model.tok2vec.from_bytes(file_.read())
     print("Training the model...")
     print("{:^5}\t{:^5}\t{:^5}\t{:^5}".format("LOSS", "P", "R", "F"))
     batch_sizes = compounding(4.0, 32.0, 1.001)
@@ -165,7 +172,17 @@ with nlp.disable_pipes(*other_pipes):  # only train textcat
         batches = minibatch(train_data, size=batch_sizes)
         for batch in batches:
             texts, annotations = zip(*batch)
-            nlp.update(texts, annotations, sgd=optimizer, drop=0.2, losses=losses)
+            
+            if texts[0] == None or annotations[0] == None:
+                print('texts[0]  | annotations[0] == None, continuing')
+                continue
+            
+            nlp.update(texts, 
+                       annotations, 
+                       sgd=optimizer, 
+                       drop=0.2, 
+                       losses=losses
+                       )
         with textcat.model.use_params(optimizer.averages):
             # evaluate on the dev data split off in load_data()
             scores = evaluate(nlp.tokenizer, textcat, dev_texts, dev_cats)
@@ -176,7 +193,19 @@ with nlp.disable_pipes(*other_pipes):  # only train textcat
                 scores["textcat_r"],
                 scores["textcat_f"],
             )
-        )
+       )
+
+
+
+df_pages_train.initial_message_text[30045]
+df_pages_train.labels[30045]
+df_pages_train.initial_message_text[30044] == None
+df_pages_train.labels[30044]
+
+
+
+
+
 
 # test the trained model
 test_text = "What do you think about the distressor? I tried it out for the first time. NOt sure how to use it though. Help!"
