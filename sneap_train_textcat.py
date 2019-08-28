@@ -203,8 +203,8 @@ df_pages_train.initial_message_text[30044] == None
 df_pages_train.labels[30044]
 
 
-
-
+# import from drive
+nlp = pickle.load(open("models/nlp_sneap.pickle", "rb"))
 
 
 # test the trained model
