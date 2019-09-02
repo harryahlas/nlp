@@ -208,7 +208,17 @@ nlp = pickle.load(open("models/nlp_sneap.pickle", "rb"))
 
 
 # test the trained model
-test_text = "What do you think about the distressor? I tried it out for the first time. NOt sure how to use it though. Help!"
+test_text = """Ugritone's got ya covered.
+DEATH METAL ESSENTIALS:
+https://ugritone.com/collections/midipacks/products/death-metal-essentials-midi-pack
+MELODEATH ESSENTIALS:
+https://ugritone.com/collections/midipacks/products/melodeath-essentials-midi-pack
+PROGRESSIVE DEATH METAL:
+https://ugritone.com/collections/midipacks/products/progressive-death-metal-essentials-midi-pack
+GRINDCORE:
+https://ugritone.com/collections/midipacks/products/grindcore-essentials-midi-pack
+DEATHCORE:
+https://ugritone.com/collections/midipacks/products/deathcore-essentials-midi-pack"""
 doc = nlp(test_text)
 print(test_text, doc.cats)
 
