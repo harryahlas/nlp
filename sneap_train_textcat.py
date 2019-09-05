@@ -17,7 +17,7 @@ import plac
 import random
 from pathlib import Path
 import thinc.extra.datasets
-
+import pickle
 import spacy
 from spacy.util import minibatch, compounding
 
@@ -219,6 +219,18 @@ GRINDCORE:
 https://ugritone.com/collections/midipacks/products/grindcore-essentials-midi-pack
 DEATHCORE:
 https://ugritone.com/collections/midipacks/products/deathcore-essentials-midi-pack"""
+test_text = """Hi all,
+
+I decided to give Odin guitars a try; I bought it mainly to make writing music easier and faster for me. It's probably already clear to everyone that real guitars sound way better, but could I get some constructive (or destructive) criticism on this short demo I made? Try to ignore anything that has to do with the guitar playing, the dynamics are super wonky, key switches or not... They're also not nearly as percussive as they should be, I may re-record the guitars myself if anyone's interested in comparing them...
+
+
+
+Thanks!"""
+test_text = """EzMix $40
+
+Perfect Drums $60
+
+Paypal only."""
 doc = nlp(test_text)
 print(test_text, doc.cats)
 
