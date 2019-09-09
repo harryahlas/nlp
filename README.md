@@ -14,7 +14,7 @@
 * *CNNtextclassificationsneap.ipynb* is a CNN architecture.  Seems to function ok but very poor results. Next step would be to toy with this to see where the issue is.
 	* Need to fix max pooling issue! See comment. *Complete*
 	* Could be due to small number of training runs (maybe 6). *Complete*
-	* Clean text. May want to remove the tags too \t, \n etc.
+	* Clean text. May want to remove the tags too \t, \n etc. *Complete*
 	* check the variables and play with them. May be doing only a few words of the text. 
 	* Try creating your own word embeddings
 ### General NLP
