@@ -12,6 +12,7 @@
         * Bonus if we can pull equipment and band names from elsewhere to use to generate entities.
     * More thorough vector model? NLTK maybe?
 * *CNNtextclassificationsneap.ipynb* is a CNN architecture.  Seems to function ok but very poor results. Next step would be to toy with this to see where the issue is.
+	* Could be due to small number of training runs
 	* check the variables and play with them. May be doing only a few words of the text. May want to remove the tags too \t, \n etc.
 ### General NLP
 * spacy_text_classification.py has good info on entities for topic discovery/modeling
