@@ -11,7 +11,7 @@
     * Next step would be to go back to the nlp tutorial and try to add entities for things like music equipment and band names.
         * Bonus if we can pull equipment and band names from elsewhere to use to generate entities.
     * More thorough vector model? NLTK maybe?
-    
+* *CNNtextclassificationsneap.ipynb* is a CNN architecture.  Seems to function ok but very poor results. Next step would be to toy with this to see where the issue is.
 ### General NLP
 * spacy_text_classification.py has good info on entities for topic discovery/modeling
 * train_textcat.py is from https://github.com/explosion/spaCy/blob/master/examples/training/train_textcat.py
