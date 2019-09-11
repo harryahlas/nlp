@@ -17,7 +17,9 @@
 	* Clean text. May want to remove the tags too \t, \n etc. *Complete*
 	* check the variables and play with them. May be doing only a few words of the text. 
 	* Try creating your own word embeddings
-* *WordVectorsSneap.ipynb* creates a Word2Vec model and runs a bidirectional lstm. Accuracy TBD. Still opportunity to improve categorizations.
+* *WordVectorsSneap.ipynb* creates a Word2Vec model and runs a bidirectional lstm. 
+	* 63% accuracy
+	* Still opportunity to improve categorizations. Refer to link below for potential improvements.
 	* Based on [https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/](https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/)
 ### General NLP
 * spacy_text_classification.py has good info on entities for topic discovery/modeling
