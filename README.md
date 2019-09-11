@@ -17,6 +17,8 @@
 	* Clean text. May want to remove the tags too \t, \n etc. *Complete*
 	* check the variables and play with them. May be doing only a few words of the text. 
 	* Try creating your own word embeddings
+* *WordVectorsSneap.ipynb* runs a bidirectional lstm. Accuracy TBD. Still opportunity to improve categorizations.
+	* Based on [https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/](https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/)
 ### General NLP
 * spacy_text_classification.py has good info on entities for topic discovery/modeling
 * train_textcat.py is from https://github.com/explosion/spaCy/blob/master/examples/training/train_textcat.py
