@@ -16,8 +16,10 @@
 	* Could be due to small number of training runs (maybe 6). *Complete*
 	* Clean text. May want to remove the tags too \t, \n etc. *Complete*
 	* check the variables and play with them. May be doing only a few words of the text. 
-	* Try creating your own word embeddings
-* *WordVectorsSneap.ipynb* creates a Word2Vec model and runs a bidirectional lstm. 
+	* Try creating your own word embeddings *Complete*
+* *WordVectorsSneap.ipynb* creates a Word2Vec model and runs a bidirectional lstm.
+	* *Next steps: Pull in second tensor that includes post title*
+		* Look at sneap pull pys for titles, hopefully they are already stored.
 	* 63% accuracy
 	* Still opportunity to improve categorizations. Refer to link below for potential improvements.
 	* Based on [https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/](https://www.depends-on-the-definition.com/guide-to-word-vectors-with-gensim-and-keras/)
