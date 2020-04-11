@@ -48,6 +48,7 @@ remove_list = ['bananas', 'apples']
 stop_words = [word for word in stop_words if word not in remove_list]
 
 # Import Dataset
+df = pd.read_pickle('C:\\Development\\github\\nlp\\datasets\\df_pages_all_backup.pkl')  
 df = pd.read_json('https://raw.githubusercontent.com/selva86/datasets/master/newsgroups.json')
 print(df.target_names.unique())
 df.head()
@@ -140,4 +141,23 @@ corpus = [id2word.doc2bow(text) for text in texts]
 print(corpus[:1])
 
 # If you want to see what word a given id corresponds to, pass the id as a key to the dictionary.
-id2word[0]
+id2word[6]
+
+# Human readable format of corpus (term-frequency)
+[[(id2word[id], freq) for id, freq in cp] for cp in corpus[:1]]
+
+# Build LDA model
+lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
+                                           id2word=id2word,
+                                           num_topics=20, 
+                                           random_state=100,
+                                           update_every=1, # determines how often the model parameters should be updated 
+                                           chunksize=100, # number of documents to be used in each training chunK
+                                           passes=10, # total number of training passes
+                                           alpha='auto', #affects sparsity of the topics. According to the Gensim docs, both defaults to 1.0/num_topics prior.
+                                           per_word_topics=True)
+
+# Print the Keyword in the 10 topics. You can see the keywords for each topic and the weightage(importance) of each keyword using lda_model.print_topics()
+pprint(lda_model.print_topics())
+doc_lda = lda_model[corpus]
+
