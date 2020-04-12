@@ -47,8 +47,11 @@ stop_words.extend(['from', 'subject', 're', 'edu', 'use', 'bananas', 'apples'])
 remove_list = ['bananas', 'apples']
 stop_words = [word for word in stop_words if word not in remove_list]
 
-# Import Dataset
-df = pd.read_pickle('C:\\Development\\github\\nlp\\datasets\\df_pages_all_backup.pkl')  
+# Import Dataset - Sneap
+df = pd.read_pickle('C:\\Development\\github\\nlp\\datasets\\df_pages_all_backup.pkl') 
+df = df.sample(1000) 
+
+# Import Dataset - newsgroups
 df = pd.read_json('https://raw.githubusercontent.com/selva86/datasets/master/newsgroups.json')
 print(df.target_names.unique())
 df.head()
@@ -157,7 +160,29 @@ lda_model = gensim.models.ldamodel.LdaModel(corpus=corpus,
                                            alpha='auto', #affects sparsity of the topics. According to the Gensim docs, both defaults to 1.0/num_topics prior.
                                            per_word_topics=True)
 
-# Print the Keyword in the 10 topics. You can see the keywords for each topic and the weightage(importance) of each keyword using lda_model.print_topics()
+# Print the 10 top Keywords in each topic. You can see the keywords for each topic and the
+# weightage(importance) of each keyword using lda_model.print_topics()
 pprint(lda_model.print_topics())
 doc_lda = lda_model[corpus]
 
+
+# How good is the model? Coherence is sometimes a better indicator.
+# Compute Perplexity
+print('\nPerplexity: ', lda_model.log_perplexity(corpus))  # a measure of how good the model is. lower the better.
+
+# Compute Coherence Score
+coherence_model_lda = CoherenceModel(model=lda_model, texts=data_lemmatized, dictionary=id2word, coherence='c_v')
+coherence_lda = coherence_model_lda.get_coherence()
+print('\nCoherence Score: ', coherence_lda)
+
+# Visualize the topics
+# A good topic model will have fairly big, non-overlapping bubbles scattered throughout the chart instead of being clustered in one quadrant.
+# A model with too many topics, will typically have many overlaps, small sized bubbles clustered in one region of the chart.
+pyLDAvis.enable_notebook()
+vis = pyLDAvis.gensim.prepare(lda_model, corpus, id2word)
+vis
+import pickle
+pickle.dump( vis, open( "vis.p", "wb" ) )#in email
+
+
+pyLDAvis.show(vis)
